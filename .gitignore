@@ -4,3 +4,4 @@ build
 *.swp
 node_modules
 test/output.png
+.vscode

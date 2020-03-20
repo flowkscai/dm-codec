@@ -1,27 +1,40 @@
 {
-  "name": "dmcreator",
-  "version": "1.0.5",
-  "description": "Create datamatrix tags, wrapper around libdmtx.",
-  "keywords": "datamatrix",
-  "homepage": "https://github.com/GuillaumeZuff/dmCreator",
-  "main": "build/Release/dmCreator.node",
+  "name": "dm-codec",
+  "version": "2.0.0",
+  "description": "Datamatrix codec, wrapper around libdmtx.",
+  "keywords": [
+    "datamatrix"
+  ],
+  "homepage": "https://github.com/flowkscai/dm-codec",
+  "main": "index.js",
   "scripts": {
     "test": "node_modules/.bin/mocha -w"
   },
-  "repository": "",
-  "author": {
-    "name": "Guillaume Zufferey",
-    "email": "guillaume@simpliquity.com"
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/flowkscai/dm-codec.git"
   },
+  "contributors": [
+    {
+      "name": "Guillaume Zufferey",
+      "email": "guillaume@simpliquity.com"
+    },
+    {
+      "name": "Kesi Cai",
+      "email": "kesi_tsai@163.com"
+    }
+  ],
   "license": "BSD",
   "dependencies": {
-    "nan": "^2.3.3"
+    "bindings": "^1.5.0",
+    "node-addon-api": "^2.0.0"
   },
   "devDependencies": {
-    "mocha": "*",
-    "should": ">= 0.0.1",
     "get-pixels": "*",
+    "mocha": "*",
+    "ndarray": ">= 1.0.18",
+    "node-gyp": "^6.1.0",
     "save-pixels": ">= 2.3.3",
-    "ndarray": ">= 1.0.18"
+    "should": ">= 0.0.1"
   }
 }

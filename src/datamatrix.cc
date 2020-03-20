@@ -25,7 +25,7 @@ std::string getFilename() {
     return name.str();
 }
 
-bool DataMatrix::generate(const std::string &text, dm_data &result) {
+void DataMatrix::encode(const std::string &text, dm_data &result) {
     vector<unsigned char> data(text.begin(), text.end());
     DmtxEncode *dm = dmtxEncodeCreate();
     dmtxEncodeDataMatrix(dm, (int)data.size(), &data[0]);
@@ -39,8 +39,6 @@ bool DataMatrix::generate(const std::string &text, dm_data &result) {
     result.channels = bytesPerPixel;
     result.pixels = vector<unsigned char>(width*height*bytesPerPixel);
 
-    //cout << "DataMatrix: "<<width<<" "<<height<<" "<<bytesPerPixel<<endl;
-
     int index=0;
     int val;
     for (int i=0; i<width; i++) {
@@ -52,13 +50,9 @@ bool DataMatrix::generate(const std::string &text, dm_data &result) {
             }
         }
     }
-
-    //cout << "Datamatrix: size: "<<width<<" "<<height<<" "<<bytesPerPixel<<endl;
-
-    return true;
 }
 
-bool DataMatrix::decode(const dm_image &image, unsigned int timeout, std::string &decodedText) {
+void DataMatrix::decode(const dm_image &image, unsigned int timeout, std::string &decodedText) {
     decodedText = "";
 
     // 1) create dmtx image structure
@@ -70,22 +64,15 @@ bool DataMatrix::decode(const dm_image &image, unsigned int timeout, std::string
     } else if (image.channels == 4) {
         dmtxImage = dmtxImageCreate(image.data, image.cols, image.rows, DmtxPack32bppRGBX);
     } else {
-        cout << "DataMatrixReader: image format unknown" << endl;
-        return false;
+        throw string("DataMatrixReader: image format unknown");
     }
 
     // 2) set dmtx image properties
     if (dmtxImageSetProp(dmtxImage, DmtxPropChannelCount, image.channels) == DmtxFail) {
-        cout << "DataMatrixReader: "
-            << "can't set image property DmtxPropChannelCount"
-            << endl;
-        return false;
+        throw string("DataMatrixReader: can't set image property DmtxPropChannelCount");
     }
     if (dmtxImageSetProp(dmtxImage, DmtxPropRowSizeBytes, image.channels) == DmtxFail) {
-        cout << "DataMatrixReader: "
-            << "can't set image property DmtxPropRowSizeBytes"
-            << endl;
-        return false;
+        throw string("DataMatrixReader: can't set image property DmtxPropRowSizeBytes");
     }
 
     // 3) create dmtx decode matrix
@@ -98,7 +85,6 @@ bool DataMatrix::decode(const dm_image &image, unsigned int timeout, std::string
     DmtxTime time = dmtxTimeAdd(dmtxTimeNow(), timeout);
     DmtxRegion *region = dmtxRegionFindNext(dmtxDecode, &time);
     while ((region != NULL) && !messageFound) {
-        //cout << "Testing region..." << region << endl;
         DmtxMessage *message = dmtxDecodeMatrixRegion(dmtxDecode, region, DmtxUndefined);
         if (message != NULL) { // message found!
             decodedText = string((char*) message->output);
@@ -113,6 +99,8 @@ bool DataMatrix::decode(const dm_image &image, unsigned int timeout, std::string
     dmtxDecodeDestroy(&dmtxDecode);
     dmtxImageDestroy(&dmtxImage);
 
-    return messageFound;
+    if (!messageFound) {
+        throw string("DataMatrixReader: datamatrix not found");
+    }
 }
 
