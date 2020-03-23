@@ -35,14 +35,15 @@ Napi::String decode(const Napi::CallbackInfo& info) {
     image.cols = obj.Get("height").ToNumber();
     image.channels = obj.Get("channels").ToNumber();
     image.data = (unsigned char *) obj.Get("data").As<Napi::Uint8Array>().ArrayBuffer().Data();
-    unsigned int timeout = 1000;
-    Napi::Value timeoutParam = obj.Get("timeout");
-    if (timeoutParam.IsNumber()) {
-        timeout = timeoutParam.ToNumber();
-    }
+
+    dm_decode_opts decodeOpts;
+    decodeOpts.timeout = obj.Get("timeout").ToNumber();
+    decodeOpts.shrink = obj.Get("shrink").ToNumber();
+    decodeOpts.squareDevnDeg = obj.Get("squareDevnDeg").ToNumber();
+    decodeOpts.threshold = obj.Get("threshold").ToNumber();
     
     try {
-        dm.decode(image, timeout, decodedText);
+        dm.decode(image, decodeOpts, decodedText);
     } catch (string e) {
         Napi::Error::New(env, e).ThrowAsJavaScriptException();
     }

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <ctime>
 #include <sstream>
+#include <math.h>
 
 using namespace std;
 
@@ -52,7 +53,7 @@ void DataMatrix::encode(const std::string &text, dm_data &result) {
     }
 }
 
-void DataMatrix::decode(const dm_image &image, unsigned int timeout, std::string &decodedText) {
+void DataMatrix::decode(const dm_image &image, const dm_decode_opts &decodeOpts, std::string &decodedText) {
     decodedText = "";
 
     // 1) create dmtx image structure
@@ -79,10 +80,13 @@ void DataMatrix::decode(const dm_image &image, unsigned int timeout, std::string
     DmtxDecode *dmtxDecode = dmtxDecodeCreate(dmtxImage, 1);
 
     // 4) optional: set dmtx decode properties
+    dmtxDecode->scale = decodeOpts.shrink;
+    dmtxDecode->squareDevn = cos(decodeOpts.squareDevnDeg * (M_PI/180));
+    dmtxDecode->edgeThresh = decodeOpts.threshold;
 
     // 5) search for next region
     bool messageFound = false;
-    DmtxTime time = dmtxTimeAdd(dmtxTimeNow(), timeout);
+    DmtxTime time = dmtxTimeAdd(dmtxTimeNow(), decodeOpts.timeout);
     DmtxRegion *region = dmtxRegionFindNext(dmtxDecode, &time);
     while ((region != NULL) && !messageFound) {
         DmtxMessage *message = dmtxDecodeMatrixRegion(dmtxDecode, region, DmtxUndefined);
@@ -92,7 +96,7 @@ void DataMatrix::decode(const dm_image &image, unsigned int timeout, std::string
             dmtxMessageDestroy(&message);
         }
         dmtxRegionDestroy(&region);
-        time = dmtxTimeAdd(dmtxTimeNow(), timeout);
+        time = dmtxTimeAdd(dmtxTimeNow(), decodeOpts.timeout);
         region = dmtxRegionFindNext(dmtxDecode, &time);
     }
 

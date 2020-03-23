@@ -15,6 +15,13 @@ struct dm_image {
     unsigned char *data;
 };
 
+struct dm_decode_opts {
+    unsigned int timeout;
+    unsigned int shrink;
+    unsigned int squareDevnDeg;
+    unsigned int threshold;
+};
+
 
 class DataMatrix {
 public:
@@ -24,7 +31,7 @@ public:
     void setData(const std::string &data);
 
     void encode(const std::string &text, dm_data &result);
-    void decode(const dm_image &image, unsigned int timeout, std::string &decodedText);
+    void decode(const dm_image &image, const dm_decode_opts &decodeOpts, std::string &decodedText);
 
     std::string pathToFile() const;
 

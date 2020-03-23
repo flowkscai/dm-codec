@@ -37,9 +37,8 @@ It returns an object with the following properties:
 dmCodec.decode({
   width: colsCount,
   height: rowsCount,
-  channels: channelsCount
   data: pixels,
-  timeout: timeout
+  ...otherOptions
 });
 ```
 
