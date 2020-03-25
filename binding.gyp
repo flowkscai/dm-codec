@@ -35,7 +35,7 @@
             }],
             ['OS=="linux"', {
                 "libraries": [
-                    "/usr/lib/libdmtx.so"
+                    "<!(echo /usr/lib/`(which dpkg-architecture > /dev/null && echo \`dpkg-architecture -qDEB_HOST_GNU_TYPE\`/) || echo`libdmtx.so)"
                 ]
 	        }],
         ]
