@@ -1,7 +1,10 @@
 {
     "targets": [{
         "target_name": "dm-codec",
-        "sources": ["src/dm-codec.cc", "src/datamatrix.cpp"],
+        "sources": [
+            "src/dm-codec.cc",
+            "src/datamatrix.cc"
+        ],
         "include_dirs" : [
             "<!@(node -p \"require('node-addon-api').include\")"
         ],
